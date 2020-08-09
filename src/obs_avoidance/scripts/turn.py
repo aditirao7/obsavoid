@@ -21,6 +21,30 @@ def callback3(pose):
     yaw= math.degrees(euler[2]) +180
     yaw = abs(yaw-360)
     yaw = yaw%360
+    
+    
+ def align(angle): 
+	flag=0
+	while 1:
+		if flag==0:
+			time.sleep(0.1)
+			final_yaw = yaw + angle
+			if final_yaw<0:
+				final_yaw=360+final_yaw
+        		if final_yaw>360:
+				final_yaw=final_yaw%360
+			flag=1
+			print(yaw, final_yaw, angle)
+		angle_diff = yaw-final_yaw
+		if angle_diff<1 and angle_diff>-1: 
+				stop()
+				break
+		if angle>0:
+			twist.angular.z = -1
+			pub.publish(twist)
+		elif angle<0:
+			twist.angular.z = 1
+			pub.publish(twist)
 
 ## NODE INTITIALIZATION
 
@@ -33,36 +57,5 @@ pub = rospy.Publisher('/cmd_vel', Twist, queue_size = 10)
 speed = Twist()
 r = rospy.Rate(100)
 
-while not rospy.is_shutdown():
-    
-    if flag == 0:
-        ## to get a constant initial yaw
-        time.sleep(1)
-        initial = yaw
-        flag=1 
-    ## initial yaw - 45 is goal for now... you can change this
-    goal = initial - 45
-
-    #our changing yaw - goal is 45 degree... it'll be -45 degree depending on the goal values
-
-    ## If statements are same more or less... 
-    angle_diff = yaw - goal
-    print(angle_diff)
-    if angle_diff<5 :
-        speed.linear.x = 0
-        speed.angular.z = 0
-        pub.publish(speed)
-    
-    if angle_diff>1:
-            speed.angular.z = +0.4
-    #        print("aligning right")
-            pub.publish(speed)
-    
-    elif angle_diff<-45:
-            speed.angular.z = +0.4
-     #       print("aligning left")
-
-            pub.publish(speed)
-    
-    r.sleep()
+align(45)
 
