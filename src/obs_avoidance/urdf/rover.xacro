@@ -1,35 +1,9 @@
 <?xml version='1.0'?>
 
-<robot name="rover" xmlns:xacro="http://www.ros.org/wiki/xacro">
-<xacro:include filename="$(find obs_avoidance)/urdf/rover.gazebo" />
+<robot name="mybot" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-
-<!-- CAMERAS-->
-
-<link name="hokuyo">
-    <collision>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry>
-         <box size="0.1 0.1 0.1"/>
-      </geometry>
-    </collision>
-
-    <visual>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <geometry>
-        <mesh filename="package://gazebo_bot/meshes/hokuyo.dae"/>
-      </geometry>
-    </visual>
-
-    <inertial>
-      <mass value="1e-5" />
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
-    </inertial>
-</link>
-
-
-<!-- CHASSIS -->
+<xacro:include filename="$(find mybot_description)/urdf/rover.gazebo" />
+<xacro:include filename="$(find realsense2_description)/urdf/_d435.urdf.xacro"/>
 
   <link name="chassis">
     <pose>0 0 0.1 0 0 0</pose>
@@ -45,22 +19,73 @@
 
     <collision name='collision'>
       <geometry>
-        <box size="1 1 .1"/>
+        <box size="1.0 1.0 .1"/>
       </geometry>
     </collision>
 
     <visual name='chassis_visual'>
       <origin xyz="0 0 0" rpy=" 0 0 0"/>
       <geometry>
-        <box size="1 1 .1"/>
+        <box size="1.0 1.0 .1"/>
       </geometry>
     </visual>
+
+
+
+    
   </link>
 
+<!--link name="camera">
+        <collision name="collision_camera">
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                         <box size="0.1 0.1 0.1" />
+                </geometry>
+        </collision>
 
-<!-- WHEEL LINKS -->
+
+        <visual name="camera_visual">
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                        <box size="0.1 0.1 0.1" />
+                </geometry>
+        </visual>
+
+
+        <inertial>
+                <mass value="0.1" />
+                <origin xyz="0 0 0.0001" rpy="0 0 0"/>
+                <inertia ixx="0.0001" ixy="0.0" ixz="0.0"
+                         iyy="0.0001" iyz="0.0"
+                         izz="0.0001" />
+        </inertial>
+</link-->
+
+
+<link name="hokuyo">
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+         <box size="0.1 0.1 0.1"/>
+      </geometry>
+    </collision>
+
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://mybot_description/meshes/hokuyo.dae"/>
+      </geometry>
+    </visual>
+
+    <inertial>
+      <mass value="1e-5" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+    </inertial>
+</link>
+
+
   <link name="left_wheel">
-    <!--origin xyz="0.1 0.13 0.1" rpy="0 1.5707 1.5707"-->
     <collision name="collision">
       <origin xyz="0 0 0" rpy="0 1.5707 1.5707"/>
       <geometry>
@@ -86,7 +111,6 @@
 
 
   <link name="right_wheel">
-    <!--origin xyz="0.1 -0.13 0.1" rpy="0 1.5707 1.5707"/-->
     <collision name="collision">
       <origin xyz="0 0 0" rpy="0 1.5707 1.5707"/>
       <geometry>
@@ -112,7 +136,6 @@
 
 
   <link name="left_fwheel">
-    <!--origin xyz="-0.1 0.13 0.1" rpy="0 1.5707 1.5707"-->
     <collision name="collision">
       <origin xyz="0 0 0" rpy="0 1.5707 1.5707"/>
       <geometry>
@@ -138,7 +161,6 @@
 
 
   <link name="right_fwheel">
-    <!--origin xyz="-0.1 -0.13 0.1" rpy="0 1.5707 1.5707"/-->
     <collision name="collision">
       <origin xyz="0 0 0" rpy="0 1.5707 1.5707"/>
       <geometry>
@@ -162,15 +184,6 @@
     </inertial>
   </link>
 
-
-<!--JOINTS -->
-
-<joint name="hokuyo_joint" type="fixed">
-        <origin xyz="-0.45 0 0.25" rpy="0 0 3.1414" />
-        <child link="hokuyo" />
-        <parent link="chassis" />
-</joint>
-
   <joint type="continuous" name="left_wheel_hinge">
     <origin xyz="0.25 0.565 0" rpy="0 0 0"/>
     <child link="left_wheel"/>
@@ -188,8 +201,6 @@
     <limit effort="100" velocity="100"/>
     <joint_properties damping="0.0" friction="1.0"/>
   </joint>
-
-
 
  <joint type="continuous" name="left_wheel_fhinge">
     <origin xyz="-0.25 0.565 0" rpy="0 0 0"/>
@@ -209,7 +220,15 @@
     <joint_properties damping="0.0" friction="1"/>
   </joint>
 
+<joint name="hokuyo_joint" type="fixed">
+        <origin xyz="0.45 0 0.25" rpy="0 0 0" />
+        <child link="hokuyo" />
+        <parent link="chassis" />
+</joint>
 
-<!-- END -->
+<sensor_d435 parent="chassis" name="camera" >
+        <origin xyz="0.45 0 0.3" rpy="0 0 0" />
+</sensor_d435>
+
 
 </robot>
